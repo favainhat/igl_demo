@@ -1,0 +1,4 @@
+npm i instagram_mqtt
+npm i dotenv
+npm i json-bigint
+npm i @pkgjs/parseargs

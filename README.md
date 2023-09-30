@@ -11,4 +11,7 @@ do_heartbeat = False
 ```
 
 An example script to alternative of pyinstallive is in alternative folder.<br>
-Use it at your own risk. I'm not test it much.
+Use it at your own risk. I'm not test it much. <br>
+If you want a better experience, Try use node scripts.<br>
+It is closer to example code than daily use code.<br>
+

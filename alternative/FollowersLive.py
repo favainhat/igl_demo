@@ -38,7 +38,7 @@ if __name__ == '__main__':
     # Example command:
     #   python test_private_api.py -u "xxx" -p "xxx" -settings "saved_auth.json" -save
 
-    parser = argparse.ArgumentParser(description='Test instagram_private_api.py')
+    parser = argparse.ArgumentParser(description='FollowersLive.py')
     parser.add_argument('-u', '--username', dest='username', type=str)
     parser.add_argument('-p', '--password', dest='password', type=str)
     parser.add_argument('-d', '--device_id', dest='device_id', type=str)
@@ -100,7 +100,6 @@ if __name__ == '__main__':
             json.dump(cached_auth, outfile, default=to_json)
 
     else:
-        retryLogin = False
         try:
             # remove previous app version specific info so that we
             # can test the new sig key whenever there's an update
@@ -114,23 +113,7 @@ if __name__ == '__main__':
 
         except ClientCookieExpiredError:
             print('Cookie Expired. Trying Relogin...')
-            retryLogin = True
-        
-        if(retryLogin):
-            try:
-                # remove previous app version specific info so that we
-                # can test the new sig key whenever there's an update
-                for k in ['app_version', 'signature_key', 'key_version', 'ig_capabilities']:
-                    cached_auth.pop(k, None)
-                api = Client(
-                    args.username, args.password,
-                    auto_patch=False, drop_incompat_keys=False,
-                    settings=cached_auth
-                )
-
-            except ClientCookieExpiredError:
-                print('Cookie Expired. Relogin Failed. Please discard cached auth and login again.')
-                sys.exit(99)
+            sys.exit(99)
     trayInfo = api.reels_tray()
     TrayJson = json.dumps(trayInfo)
     print(TrayJson)
