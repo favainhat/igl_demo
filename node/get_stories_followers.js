@@ -45,8 +45,8 @@ const {IG_USERNAME = '', IG_PASSWORD = ''} = process.env;
 	}
 	
 	if(!ImportState){
-	 // the client received auth data
-    // the listener has to be added before connecting
+	// the client received auth data
+	// the listener has to be added before connecting
 		ig.fbns.on('auth', async auth => {
 			// logs the auth
 			logEvent('auth')(auth);
@@ -54,7 +54,6 @@ const {IG_USERNAME = '', IG_PASSWORD = ''} = process.env;
 			await saveState(ig);
 		});
 	}
-	///*
 		var reels = await ig.feed.reelsTray().request();
 		console.log(reels)
 		var lives = reels.broadcasts;

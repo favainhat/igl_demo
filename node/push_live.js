@@ -45,8 +45,8 @@ const { IG_USERNAME = '', IG_PASSWORD = '' } = process.env;
 	}
 
 	if (!ImportState) {
-		// the client received auth data
-		// the listener has to be added before connecting
+	// the client received auth data
+	// the listener has to be added before connecting
 		ig.fbns.on('auth', async auth => {
 			// logs the auth
 			logEvent('auth')(auth);
@@ -198,7 +198,7 @@ async function live_record(name, ig, data) {
 	console.log(name, data);
 	console.log(data.actionPath)
 
-	//if(data.actionPath == 'broadcast'){
+	//if(data.actionPath.includes('broadcast')){
 	console.log(data.actionParams.id);
 	var liveId = data.actionParams.id;
 	var liveinfo = await ig.live.info(liveId);

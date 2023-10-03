@@ -112,13 +112,15 @@ if __name__ == '__main__':
             )
 
         except ClientCookieExpiredError:
-            print('Cookie Expired. Trying Relogin...')
+            print('Cookie Expired. Please Relogin.')
             sys.exit(99)
     trayInfo = api.reels_tray()
     TrayJson = json.dumps(trayInfo)
     print(TrayJson)
 
     liveList = trayInfo['broadcasts']
+    if(not liveList):
+        print("There is no live")
     for live in liveList:
         playbackUrl = live['dash_abr_playback_url']
         print(playbackUrl)
@@ -126,13 +128,8 @@ if __name__ == '__main__':
         broadcast_owner = live['broadcast_owner']
         username = broadcast_owner['username']	    
         if not os.path.isfile(username + "_"  + str(liveId) +".mp4"):
-            str1 = "streamlink.exe" " "+ "\""+ playbackUrl +"\"" + " " +"best -o " +username + "_"  + str(liveId) +".mp4"
-            subprocess.Popen(str1,creationflags=subprocess.CREATE_NEW_CONSOLE)
-    while True:
-        time.sleep(10)
-         
-        
-
-   
-
-
+            child_arg = "streamlink" " "+ "\""+ playbackUrl +"\"" + " " +"best -o " +username + "_"  + str(liveId) +".mp4"
+            subprocess.Popen(child_arg,creationflags=subprocess.CREATE_NEW_CONSOLE)
+    #while True:
+    #   time.sleep(10)
+    time.sleep(5)

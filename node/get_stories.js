@@ -59,8 +59,8 @@ if(values.t == null){
 	}
 	
 	if(!ImportState){
-	 // the client received auth data
-    // the listener has to be added before connecting
+	// the client received auth data
+	// the listener has to be added before connecting
 		ig.fbns.on('auth', async auth => {
 			// logs the auth
 			logEvent('auth')(auth);
