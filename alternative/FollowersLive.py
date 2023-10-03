@@ -36,7 +36,7 @@ if __name__ == '__main__':
     logger.setLevel(logging.WARNING)
 
     # Example command:
-    #   python test_private_api.py -u "xxx" -p "xxx"
+    #   python FollowersLive.py -u "xxx" -p "xxx"
 
     parser = argparse.ArgumentParser(description='FollowersLive.py')
     parser.add_argument('-u', '--username', dest='username', type=str)
@@ -50,16 +50,39 @@ if __name__ == '__main__':
         logger.setLevel(logging.DEBUG)
 
     print('Client version: {0!s}'.format(__version__))
+    config = {}
+    uname  = None
+    upass  = None
+    try:
+        with open("config.json") as file:
+            config = json.load(file)
+            uname = config['username']
+            upass = config['userpass']
+            config_loaded = True
+    except:
+        pass
+
+    if(args.username):
+        uname = args.username
+        config['username'] = uname
+
+    if(args.password):
+        upass = args.password
+        config['username'] = upass
 
     cached_auth = None
     try:
         with open("userinfo.json") as file_data:
             cached_auth = json.load(file_data, object_hook=from_json)
     except:
-        if(not args.username or not args.password):
+        if(not uname or not upass):
             print("username or password is not entered")
+            print('python SomeoneLive.py -u "xxx" -p "xxx"')
             sys.exit(99)
 
+    if(args.username and args.password):
+        with open("config.json", 'w') as outfile:
+            json.dump(config, outfile)
 
     api = None
     if not cached_auth:
@@ -69,7 +92,7 @@ if __name__ == '__main__':
             # Example of how to generate a uuid.
             # You can generate a fixed uuid if you use a fixed value seed
             uuid = Client.generate_uuid(
-                seed='{pw!s}.{usr!s}.{ts!s}'.format(**{'pw': args.username, 'usr': args.password, 'ts': ts_seed}))
+                seed='{pw!s}.{usr!s}.{ts!s}'.format(**{'pw': uname, 'usr': upass, 'ts': ts_seed}))
         else:
             uuid = args.uuid
 
@@ -77,14 +100,13 @@ if __name__ == '__main__':
             # Example of how to generate a device id.
             # You can generate a fixed device id if you use a fixed value seed
             device_id = Client.generate_deviceid(
-                seed='{usr!s}.{ts!s}.{pw!s}'.format(**{'pw': args.password, 'usr': args.username, 'ts': ts_seed}))
+                seed='{usr!s}.{ts!s}.{pw!s}'.format(**{'pw': upass, 'usr': uname, 'ts': ts_seed}))
         else:
             device_id = args.device_id
-
         # start afresh without existing auth
         try:
             api = Client(
-                args.username, args.password,
+                uname, upass,
                 auto_patch=True, drop_incompat_keys=False,
                 guid=uuid, device_id=device_id
                 )
@@ -100,20 +122,38 @@ if __name__ == '__main__':
             json.dump(cached_auth, outfile, default=to_json)
 
     else:
+        ReLogin = False
         try:
             # remove previous app version specific info so that we
             # can test the new sig key whenever there's an update
             for k in ['app_version', 'signature_key', 'key_version', 'ig_capabilities']:
                 cached_auth.pop(k, None)
             api = Client(
-                args.username, args.password,
+                uname, upass,
                 auto_patch=False, drop_incompat_keys=False,
                 settings=cached_auth
             )
 
         except ClientCookieExpiredError:
             print('Cookie Expired. Please Relogin.')
-            sys.exit(99)
+            ReLogin = True
+
+        if(ReLogin):
+            try:
+                api = Client(
+                    uname, upass,
+                    auto_patch=False, drop_incompat_keys=False,
+                    guid=cached_auth['uuid'], device_id=cached_auth['device_id']
+                )
+                # stuff that you should cache
+                cached_auth = api.settings
+                # this auth cache can be re-used for up to 90 days
+                with open("userinfo.json", 'w') as outfile:
+                    json.dump(cached_auth, outfile, default=to_json)
+            except ClientCookieExpiredError:
+                print('Cookie Expired. Relogin Failed. Please discard cached auth and login again.')
+                sys.exit(99)
+
     trayInfo = api.reels_tray()
     TrayJson = json.dumps(trayInfo)
     print(TrayJson)
@@ -133,6 +173,4 @@ if __name__ == '__main__':
                 subprocess.Popen(child_arg,creationflags=subprocess.CREATE_NEW_CONSOLE)
             else:
                 subprocess.Popen(child_arg,stdin=subprocess.PIPE, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
-    #while True:
-    #    time.sleep(10)
-    time.sleep(5)
+    time.sleep(3)
