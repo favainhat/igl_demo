@@ -18,7 +18,7 @@ const existsAsync = promisify(exists);
 require('dotenv').config();
 const { IG_USERNAME = '', IG_PASSWORD = '' } = process.env;
 
-//const started = [];
+const liveList = {};
 (async () => {
 	// this extends the IgApiClient with realtime features
 	const ig = withFbnsAndRealtime(new IgApiClient(), /* you may pass mixins in here */);
@@ -58,7 +58,8 @@ const { IG_USERNAME = '', IG_PASSWORD = '' } = process.env;
 	// you received a notification
 	ig.fbns.on('push', logEvent('push'));
 
-	// subscribe subset of push to easy handling record
+	// subscribe subset of push to easy handling record live
+	//I don't like rely on it!! but left for a while prevent to possible data loss...
 	ig.fbns.on('live_broadcast', live_event('live_broadcast', ig));
 	ig.fbns.on('live_with_broadcast', live_event('live_with_broadcast'));
 
@@ -205,11 +206,11 @@ async function live_record(name, ig, data) {
 	var url = liveinfo.dash_abr_playback_url
 	//var userInfo = ig.user.info(data.sourceUserId)
 	//var username = userInfo.username
-	//var username = liveinfo.broadcast_owner.username
-	if (existsSync('lv_' + liveId + '.mp4')) {
+	var username = liveinfo.broadcast_owner.username
+	if (existsSync('pv_' +liveId+ "_" +username+ ".mp4")) {
 		return;
 	}
-	var child = spawn("cmd.exe", ["/c", "streamlink", '"' + url, '"', "best", "-o", 'lv_' + liveId + ".mp4"], {
+	var child = spawn("streamlink", ['"' + url, '"', "best", "-o", 'pv_' +liveId+ "_" +username+ ".mp4"], {
 		detached: true,
 		shell: true,
 		stdio: 'ignore'
@@ -218,6 +219,28 @@ async function live_record(name, ig, data) {
 	//}
 }
 
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function child_spawn(username,liveId,url){
+	var cfunc = child_spawn.bind(null,username,liveId,url);
+	console.log(username + "_" + liveId + " is stared")
+	if (liveId in liveList){
+		var child = spawn("streamlink", ['"' + url, '"', "best", "-o", 'rv_' +liveId + "_" + username+"_"+String(Date.now())+".mp4"], {
+			detached: true,
+			shell: true,
+			stdio: 'ignore'
+		});
+		console.log(liveList);
+		//child.on('exit', cfunc);
+		child.on('exit', async function () {
+			await sleep(100); //retry delay
+			cfunc();
+		});
+		return child
+	}
+}
 
 async function unhandled_event(name, topic, messages, ig) {
 	console.log(name, topic, messages);
@@ -235,9 +258,9 @@ async function unhandled_event(name, topic, messages, ig) {
 							var bar = JSONbig.parse(foo);
 							var liveId = bar.broadcast_id
 							console.log(liveId);
-							if (existsSync(liveId + '.mp4')) {
-								continue;
-							}
+							//if (existsSync(liveId + '.mp4')) {
+							//	continue;
+							//}
 							try {
 								var liveinfo = await ig.live.info(liveId);
 								//console.log(liveinfo)
@@ -245,17 +268,24 @@ async function unhandled_event(name, topic, messages, ig) {
 								console.log(url)
 								//var userInfo = ig.user.info(data.sourceUserId)
 								//var username = userInfo.username
-								//var username = liveinfo.broadcast_owner.username
-								var child = spawn("cmd.exe", ["/c", "streamlink", '"' + url, '"', "best", "-o", liveId + ".mp4"], {
-
-									detached: true,
-									shell: true,
-									stdio: 'ignore'
-								});
-								child.unref();
+								var username = liveinfo.broadcast_owner.username
+								if (!(liveId in liveList)){
+									var Linfo  = JSON.parse(JSON.stringify(liveinfo));
+									liveList[liveId] = Linfo;
+									child_spawn(username,liveId,url)
+								}
 							} catch (exception) {
 								console.error(exception);
 							}
+						}
+						if (dat.op == 'remove') {
+							var foo = dat.value
+							var bar = JSONbig.parse(foo);
+							var liveId = bar.broadcast_id
+							if (liveId in liveList){
+								delete liveList[liveId]
+							}
+
 						}
 					}
 				}

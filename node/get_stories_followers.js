@@ -62,9 +62,6 @@ const {IG_USERNAME = '', IG_PASSWORD = ''} = process.env;
 		var url = live.dash_abr_playback_url
 		var liveId = live.id;
 		console.log(url)
-		if (existsSync( 'sv_' + liveId + '.mp4')) {
-			return;
-		}
 		//var media_id_info = live.media_id.split("-");
 		//var LIVEID = media_id_info[0]
 		//var sourceUserId = media_id_info[1]
@@ -72,7 +69,11 @@ const {IG_USERNAME = '', IG_PASSWORD = ''} = process.env;
 
 		//var userInfo = ig.user.info(sourceUserId)
 		//var username = userInfo.username
-		var child = spawn("cmd.exe", ["/c",  "streamlink", '"' + url, '"', "best", "-o", 'sv_' +liveId+".mp4"], {
+		username = live.broadcast_owner.username
+		if (existsSync( 'sv_' + liveId + "_" + username + '.mp4')) {
+			return;
+		}
+		var child = spawn("streamlink", ['"' + url, '"', "best", "-o", 'sv_' + liveId + "_" + username + '.mp4'], {
 
 			detached: true,
 			shell: true,

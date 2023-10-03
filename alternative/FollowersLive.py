@@ -36,7 +36,7 @@ if __name__ == '__main__':
     logger.setLevel(logging.WARNING)
 
     # Example command:
-    #   python test_private_api.py -u "xxx" -p "xxx" -settings "saved_auth.json" -save
+    #   python test_private_api.py -u "xxx" -p "xxx"
 
     parser = argparse.ArgumentParser(description='FollowersLive.py')
     parser.add_argument('-u', '--username', dest='username', type=str)
@@ -129,7 +129,10 @@ if __name__ == '__main__':
         username = broadcast_owner['username']	    
         if not os.path.isfile(username + "_"  + str(liveId) +".mp4"):
             child_arg = "streamlink" " "+ "\""+ playbackUrl +"\"" + " " +"best -o " +username + "_"  + str(liveId) +".mp4"
-            subprocess.Popen(child_arg,creationflags=subprocess.CREATE_NEW_CONSOLE)
+            if sys.platform.startswith('win32'):
+                subprocess.Popen(child_arg,creationflags=subprocess.CREATE_NEW_CONSOLE)
+            else:
+                subprocess.Popen(child_arg,stdin=subprocess.PIPE, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
     #while True:
-    #   time.sleep(10)
+    #    time.sleep(10)
     time.sleep(5)

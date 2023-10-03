@@ -72,23 +72,23 @@ if(values.t == null){
   	const userFeed = ig.feed.user(targetUser.pk);
   	const userFeedinfo = await userFeed.request(); // see "account-followers.feed.example.ts" if you want to know how to work with feeds
   	console.log(userFeedinfo);
-  	var liveIdz = userFeedinfo.user.live_broadcast_id;
-  	if(liveIdz === undefined){
+	var liveId = userFeedinfo.user.live_broadcast_id;
+  	if(liveId === undefined){
 	  console.log("It seems there is no live")
 	  return;
   	}
 
-  	var liveinfoz  = await ig.live.info(liveIdz);
-  	console.log(liveinfoz)
-  	var urlz = liveinfoz.dash_abr_playback_url
-	console.log(urlz)
-	if (existsSync( 'uv_' + liveIdz + '.mp4')) {
-		return;
-	}
+  	var liveinfo  = await ig.live.info(liveId);
+  	console.log(liveinfo)
+  	var url = liveinfo.dash_abr_playback_url
+	console.log(url)
 	//var userInfo = ig.user.info(sourceUserId)
 	//var username = userInfo.username
-	//var username = liveinfoz.broadcast_owner.username
-	var child = spawn("cmd.exe", ["/c",  "streamlink", '"' + urlz, '"', "best", "-o", 'uv_' +liveIdz+".mp4"], {
+	var username = liveinfo.broadcast_owner.username
+	if (existsSync('uv_' +liveId+ "_" +username+ '.mp4')) {
+		return;
+	}
+	var child = spawn(streamlink, ['"' + url, '"', "best", "-o", 'uv_' +liveId+ "_" +username+ '.mp4'], {
 		detached: true,
 		shell: true,
 		stdio: 'ignore'
