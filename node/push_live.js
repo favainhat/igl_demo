@@ -143,7 +143,7 @@ const liveList = {};
 		});
 	}, 2000);
 	*/
-	/*
+	///*
 	setTimeout(() => {
 		console.log('In App');
 		ig.realtime.direct.sendForegroundState({
@@ -152,7 +152,7 @@ const liveList = {};
 			keepAliveTimeout: 60,
 		});
 	}, 4000);
-	*/
+	//*/
 
 	// an example on how to subscribe to live comments
 	// you can add other GraphQL subs using .subscribe

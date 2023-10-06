@@ -172,5 +172,5 @@ if __name__ == '__main__':
             if sys.platform.startswith('win32'):
                 subprocess.Popen(child_arg,creationflags=subprocess.CREATE_NEW_CONSOLE)
             else:
-                subprocess.Popen(child_arg,stdin=subprocess.PIPE, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
+                subprocess.Popen(child_arg,stdin=subprocess.PIPE, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT,shell=True)
     time.sleep(3)
