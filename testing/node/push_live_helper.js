@@ -210,7 +210,7 @@ async function live_record(name, ig, data) {
 	if (existsSync('pv_' +liveId+ "_" +username+ ".mp4")) {
 		return;
 	}
-	var child = spawn("streamlink", ['"' + url, '"', "best", "-o", 'pv_' +liveId+ "_" +username+ ".mp4"], {
+	var child = spawn("helper.py", ["-p" ,"pv","-u",username,"-l", liveId, "-m",'"' + url + '"'], {
 		detached: true,
 		shell: true,
 		stdio: 'ignore'
@@ -227,7 +227,7 @@ async function child_spawn(username,liveId,url){
 	var cfunc = child_spawn.bind(null,username,liveId,url);
 	console.log(username + "_" + liveId + " is stared")
 	if (liveId in liveList){
-		var child = spawn("streamlink", ['"' + url, '"', "best", "-o", 'rv_' +liveId + "_" + username+"_"+String(Date.now())+".mp4"], {
+		var child = spawn("helper.py", ["-p" ,"rv","-u",username,"-l", liveId, "-m",'"' + url + '"'], {
 			detached: true,
 			shell: true,
 			stdio: 'ignore'
@@ -235,7 +235,7 @@ async function child_spawn(username,liveId,url){
 		console.log(liveList);
 		//child.on('exit', cfunc);
 		child.on('exit', async function () {
-			await sleep(500); //retry delay
+			await sleep(3000); //retry delay
 			if (liveId in liveList){
 				cfunc();
 			}
