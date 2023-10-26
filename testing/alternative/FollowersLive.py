@@ -36,15 +36,14 @@ if __name__ == '__main__':
     logger.setLevel(logging.WARNING)
 
     # Example command:
-    #   python SomeoneLive.py -u "xxx" -p "xxx" -t "xxx"
+    #   python FollowersLive.py -u "xxx" -p "xxx"
 
-    parser = argparse.ArgumentParser(description='SomeoneLive.py')
+    parser = argparse.ArgumentParser(description='FollowersLive.py')
     parser.add_argument('-u', '--username', dest='username', type=str)
     parser.add_argument('-p', '--password', dest='password', type=str)
     parser.add_argument('-d', '--device_id', dest='device_id', type=str)
     parser.add_argument('-uu', '--uuid', dest='uuid', type=str)
     parser.add_argument('-debug', '--debug', dest='debug')
-    parser.add_argument('-t', '--target',dest='target', type=str, required=True)
 
     args = parser.parse_args()
     if args.debug:
@@ -78,7 +77,7 @@ if __name__ == '__main__':
     except:
         if(not uname or not upass):
             print("username or password is not entered")
-            print('python SomeoneLive.py -u "xxx" -p "xxx" -t "xxx"')
+            print('python FollowersLive.py -u "xxx" -p "xxx"')
             sys.exit(99)
 
     if(args.username and args.password):
@@ -155,27 +154,27 @@ if __name__ == '__main__':
                 print('Cookie Expired. Relogin Failed. Please discard cached auth and login again.')
                 sys.exit(99)
 
-    username_info = api.username_info(args.target)
-    username_infoJson = json.dumps(username_info)
-    print(username_infoJson)
-    userId = username_info['user']['pk_id']
-    print(userId)
-    live = api.user_broadcast(userId)
-    liveJson = json.dumps(live)
-    print(liveJson)
-    if live:
+    trayInfo = api.reels_tray()
+    TrayJson = json.dumps(trayInfo)
+    print(TrayJson)
+
+    liveList = trayInfo['broadcasts']
+    if(not liveList):
+        print("There is no live")
+    for live in liveList:
         playbackUrl = live['dash_abr_playback_url']
         print(playbackUrl)
         liveId = live['id']
         broadcast_owner = live['broadcast_owner']
-        username = broadcast_owner['username']
+        username = broadcast_owner['username']	    
         if not os.path.isfile(username + "_"  + str(liveId) +".mp4"):
-            child_arg = "streamlink" " "+ "\""+ playbackUrl +"\"" + " " +"best -o " +username + "_"  + str(liveId) +".mp4"
+            child_arg = "helper.py" + " -p " + "pv" + " -u " + username + " -l " +  str(liveId) +" -m " + '"' + playbackUrl + '"'
             if sys.platform.startswith('win32'):
+                child_arg = "cmd /c " + child_arg
                 subprocess.Popen(child_arg,creationflags=subprocess.CREATE_NEW_CONSOLE)
+                print(child_arg)
             else:
+                child_arg = "sh " + child_arg
                 subprocess.Popen(child_arg,stdin=subprocess.PIPE, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT,shell=True)
-    else:
-        print("it seems there is no live")
-        sys.exit(99)
+                print(child_arg)
     time.sleep(1)

@@ -81,10 +81,10 @@ if(values.t == null){
 	var url = UserStoryinfo.broadcast.dash_abr_playback_url
 	console.log(url)
 	var username = UserStoryinfo.broadcast.broadcast_owner.username
-	if (existsSync('uv_' +liveId+ "_" +username+ '.mp4')) {
+	if (existsSync('uv_' +liveId+ "_" +username)) {
 		return;
 	}
-	var child = spawn('streamlink', ['"' + url, '"', "best", "-o", 'uv_' +liveId+ "_" +username+ '.mp4'], {
+	var child = spawn("helper.py", ["-p" ,"uv","-u",username,"-l", liveId, "-m",'"' + url + '"'], {
 		detached: true,
 		shell: true,
 		stdio: 'ignore'

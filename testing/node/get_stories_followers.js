@@ -18,20 +18,6 @@ const existsAsync = promisify(exists);
 require('dotenv').config();
 const {IG_USERNAME = '', IG_PASSWORD = ''} = process.env;
 
-const { parseArgs } = require('node:util');
-const options = {
-	t: {
-		type: 'string',
-	},
-};
-var args = process.argv;
-const { values, positionals } = parseArgs({ strict: false, args, options, allowPositionals: true });
-console.log(values)
-if(values.t == null){
-	console.log("target is no specified Please use with -t=username");
-	return;
-}
-
 //const started = [];
 (async () => {
     // this extends the IgApiClient with realtime features
@@ -68,28 +54,34 @@ if(values.t == null){
 			await saveState(ig);
 		});
 	}
-	const targetUser = await ig.user.searchExact(values.t); // getting exact user by login
-	console.log(targetUser.pk)
-	const UserStoryinfo = await ig.feed.userStory(targetUser.pk).request(targetUser.pk); // see "account-followers.feed.example.ts" if you want to know how to work with feeds
-	console.log(UserStoryinfo);
-	if(UserStoryinfo.broadcast === null){
-	  console.log("It seems there is no live");
-	  return;
-  	}
-	broadcastInfo = UserStoryinfo.broadcast;
-	var liveId = UserStoryinfo.broadcast.id;
-	var url = UserStoryinfo.broadcast.dash_abr_playback_url
-	console.log(url)
-	var username = UserStoryinfo.broadcast.broadcast_owner.username
-	if (existsSync('uv_' +liveId+ "_" +username+ '.mp4')) {
-		return;
-	}
-	var child = spawn('streamlink', ['"' + url, '"', "best", "-o", 'uv_' +liveId+ "_" +username+ '.mp4'], {
-		detached: true,
-		shell: true,
-		stdio: 'ignore'
-	});
-	child.unref();
+		var reels = await ig.feed.reelsTray().request();
+		console.log(reels)
+		var lives = reels.broadcasts;
+	
+		for (const live of lives) {
+		var url = live.dash_abr_playback_url
+		var liveId = live.id;
+		console.log(url)
+		//var media_id_info = live.media_id.split("-");
+		//var LIVEID = media_id_info[0]
+		//var sourceUserId = media_id_info[1]
+		//console.log(media_id_info)
+
+		//var userInfo = ig.user.info(sourceUserId)
+		//var username = userInfo.username
+		username = live.broadcast_owner.username
+		if (existsSync( 'sv_' + liveId + "_" + username)) {
+			return;
+		}
+		var child = spawn("helper.py", ["-p" ,"sv","-u",username,"-l", liveId, "-m",'"' + url + '"'], {
+			detached: true,
+			shell: true,
+			stdio: 'ignore'
+		});
+		child.unref();
+		}
+	
+	
 })();
 
 

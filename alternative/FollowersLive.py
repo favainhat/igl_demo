@@ -77,7 +77,7 @@ if __name__ == '__main__':
     except:
         if(not uname or not upass):
             print("username or password is not entered")
-            print('python SomeoneLive.py -u "xxx" -p "xxx"')
+            print('python FollowersLive.py -u "xxx" -p "xxx"')
             sys.exit(99)
 
     if(args.username and args.password):
@@ -173,4 +173,4 @@ if __name__ == '__main__':
                 subprocess.Popen(child_arg,creationflags=subprocess.CREATE_NEW_CONSOLE)
             else:
                 subprocess.Popen(child_arg,stdin=subprocess.PIPE, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT,shell=True)
-    time.sleep(3)
+    time.sleep(1)

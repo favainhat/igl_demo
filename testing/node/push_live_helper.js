@@ -207,7 +207,7 @@ async function live_record(name, ig, data) {
 	//var userInfo = ig.user.info(data.sourceUserId)
 	//var username = userInfo.username
 	var username = liveinfo.broadcast_owner.username
-	if (existsSync('pv_' +liveId+ "_" +username+ ".mp4")) {
+	if (existsSync('pv_' +liveId+ "_" +username)) {
 		return;
 	}
 	var child = spawn("helper.py", ["-p" ,"pv","-u",username,"-l", liveId, "-m",'"' + url + '"'], {
@@ -227,7 +227,7 @@ async function child_spawn(username,liveId,url){
 	var cfunc = child_spawn.bind(null,username,liveId,url);
 	console.log(username + "_" + liveId + " is stared")
 	if (liveId in liveList){
-		var child = spawn("helper.py", ["-p" ,"rv","-u",username,"-l", liveId, "-m",'"' + url + '"'], {
+		var child = spawn("helper.py", ["-p" ,"rv","-u",username,"-l", liveId, "-m",'"' + url + '"',"-ts","true"], {
 			detached: true,
 			shell: true,
 			stdio: 'ignore'

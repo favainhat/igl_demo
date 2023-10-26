@@ -170,10 +170,12 @@ if __name__ == '__main__':
         broadcast_owner = live['broadcast_owner']
         username = broadcast_owner['username']
         if not os.path.isfile(username + "_"  + str(liveId) +".mp4"):
-            child_arg = "streamlink" " "+ "\""+ playbackUrl +"\"" + " " +"best -o " +username + "_"  + str(liveId) +".mp4"
+            child_arg = "helper.py" + " -p " + "pv" + " -u " + username + " -l " +  str(liveId) +" -m " + '"' + playbackUrl + '"'
             if sys.platform.startswith('win32'):
+                child_arg = "cmd /c " + child_arg
                 subprocess.Popen(child_arg,creationflags=subprocess.CREATE_NEW_CONSOLE)
             else:
+                child_arg = "sh " + child_arg
                 subprocess.Popen(child_arg,stdin=subprocess.PIPE, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT,shell=True)
     else:
         print("it seems there is no live")
