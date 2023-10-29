@@ -81,7 +81,7 @@ if(values.t == null){
 	var url = UserStoryinfo.broadcast.dash_abr_playback_url
 	console.log(url)
 	var username = UserStoryinfo.broadcast.broadcast_owner.username
-	if (existsSync('uv_' +liveId+ "_" +username)) {
+	if (existsSync('uv_' +username+ "_" +liveId)) {
 		return;
 	}
 	var child = spawn("helper.py", ["-p" ,"uv","-u",username,"-l", liveId, "-m",'"' + url + '"'], {

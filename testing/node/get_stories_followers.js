@@ -70,7 +70,7 @@ const {IG_USERNAME = '', IG_PASSWORD = ''} = process.env;
 		//var userInfo = ig.user.info(sourceUserId)
 		//var username = userInfo.username
 		username = live.broadcast_owner.username
-		if (existsSync( 'sv_' + liveId + "_" + username)) {
+		if (existsSync('sv_' +username+ "_" +liveId)) {
 			return;
 		}
 		var child = spawn("helper.py", ["-p" ,"sv","-u",username,"-l", liveId, "-m",'"' + url + '"'], {

@@ -207,7 +207,7 @@ async function live_record(name, ig, data) {
 	//var userInfo = ig.user.info(data.sourceUserId)
 	//var username = userInfo.username
 	var username = liveinfo.broadcast_owner.username
-	if (existsSync('pv_' +liveId+ "_" +username)) {
+	if (existsSync('pv_' +username+ "_" +liveId)) {
 		return;
 	}
 	var child = spawn("helper.py", ["-p" ,"pv","-u",username,"-l", liveId, "-m",'"' + url + '"'], {
