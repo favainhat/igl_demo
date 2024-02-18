@@ -61,7 +61,7 @@ const liveList = {};
 	// subscribe subset of push to easy handling record live
 	//I don't like rely on it!! but left for a while prevent to possible data loss...
 	ig.fbns.on('live_broadcast', live_event('live_broadcast', ig));
-	ig.fbns.on('live_with_broadcast', live_event('live_with_broadcast'));
+	ig.fbns.on('live_with_broadcast', live_event('live_with_broadcast', ig));
 
 	// 'error' is emitted whenever the client experiences a fatal error
 	ig.fbns.on('error', logEvent('error'));
