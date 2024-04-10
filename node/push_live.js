@@ -202,7 +202,12 @@ async function live_record(name, ig, data) {
 	//if(data.actionPath.includes('broadcast')){
 	console.log(data.actionParams.id);
 	var liveId = data.actionParams.id;
-	var liveinfo = await ig.live.info(liveId);
+	try {
+		var liveinfo = await ig.live.info(liveId);
+	} catch (exception) {
+			console.error(exception);
+			return;
+	}
 	var url = liveinfo.dash_abr_playback_url
 	//var userInfo = ig.user.info(data.sourceUserId)
 	//var username = userInfo.username
