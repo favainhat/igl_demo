@@ -80,7 +80,8 @@ if(values.t == null){
 	var liveId = UserStoryinfo.broadcast.id;
 	var url = UserStoryinfo.broadcast.dash_abr_playback_url
 	console.log(url)
-	var username = UserStoryinfo.broadcast.broadcast_owner.username
+	//var username = UserStoryinfo.broadcast.broadcast_owner.username
+	var username = targetUser.username
 	if (existsSync('uv_' +username+ "_" +liveId)) {
 		return;
 	}

@@ -209,9 +209,9 @@ async function live_record(name, ig, data) {
 			return;
 	}
 	var url = liveinfo.dash_abr_playback_url
-	//var userInfo = ig.user.info(data.sourceUserId)
-	//var username = userInfo.username
-	var username = liveinfo.broadcast_owner.username
+	var userInfo = ig.user.info(data.sourceUserId)
+	var username = userInfo.username
+	//var username = liveinfo.broadcast_owner.username
 	if (existsSync('pv_' +username+ "_" +liveId)) {
 		return;
 	}
@@ -265,17 +265,14 @@ async function unhandled_event(name, topic, messages, ig) {
 							var bar = JSONbig.parse(foo);
 							var liveId = bar.broadcast_id
 							console.log(liveId);
-							//if (existsSync(liveId + '.mp4')) {
-							//	continue;
-							//}
 							try {
 								var liveinfo = await ig.live.info(liveId);
 								//console.log(liveinfo)
 								var url = liveinfo.dash_abr_playback_url
 								console.log(url)
-								//var userInfo = ig.user.info(data.sourceUserId)
-								//var username = userInfo.username
-								var username = liveinfo.broadcast_owner.username
+								var userInfo = ig.user.info(data.sourceUserId)
+								var username = userInfo.username
+								//var username = liveinfo.broadcast_owner.username
 								if (!(liveId in liveList)){
 									var Linfo  = JSON.parse(JSON.stringify(liveinfo));
 									liveList[liveId] = Linfo;

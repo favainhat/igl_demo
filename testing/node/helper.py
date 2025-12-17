@@ -34,6 +34,12 @@ finally:
     # Requires ffmpeg installed. If you prefer to use avconv
     # for example, omit this step and do it manually
     if args.timed:
-        dl.stitch(args.prefix+ "_" +args.username + '_' + args.liveid + '_' + str(timestamp) + '.mp4')
+        dl.stitch(
+            args.prefix+ "_" +args.username + '_' + args.liveid + '_' + str(timestamp) + '.mp4',
+            cleartempfiles=False
+        )
     else:
-        dl.stitch(args.prefix+ "_" +args.username + '_' + args.liveid + '.mp4')
+        dl.stitch(
+            args.prefix+ "_" +args.username + '_' + args.liveid + '.mp4',
+           cleartempfiles=False
+        )
